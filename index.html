@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chef's Recipe Riddle</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="game-container">
+    <!-- TOP STATUS BAR WITH PROMINENT LARGE LAP & LEVEL HUD -->
+    <header class="game-header">
+      <div class="header-left">
+        <!-- BIG PROMINENT LAP & LEVEL DISPLAY -->
+        <div class="hud-lap-level-container">
+          <div class="hud-badge lap-box" title="Current Lap">
+            <span class="hud-label">🏁 LAP</span>
+            <div class="hud-numbers">
+              <span class="hud-current" id="lap-display">1</span>
+              <span class="hud-divider">/</span>
+              <span class="hud-total" id="lap-total-display">10</span>
+            </div>
+          </div>
+
+          <div class="hud-badge level-box" title="Current Level in Lap">
+            <span class="hud-label">🎖️ LEVEL</span>
+            <div class="hud-numbers">
+              <span class="hud-current" id="level-display">1</span>
+              <span class="hud-divider">/</span>
+              <span class="hud-total">10</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- INGREDIENT TRACKER -->
+        <div class="stat-badge ing-stats-badge" title="Ingredients Ready vs Failed">
+          <span class="badge-icon">🥗</span>
+          <span class="badge-label">
+            Win: <strong id="ready-count-display" class="color-success">0</strong> | 
+            Failed: <strong id="failed-count-display" class="color-danger">0</strong>
+          </span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <h1 class="game-title">👨‍🍳 Chef's Recipe Riddle</h1>
+        <div class="lap-theme-tag" id="lap-theme-tag">Lap 1: Morning Bistro Rush</div>
+      </div>
+
+      <div class="header-right">
+        <div class="stat-badge score-badge">
+          <span class="badge-icon">⭐</span>
+          <span class="badge-label">Score: <strong id="score-display">0</strong></span>
+        </div>
+        <div class="stat-badge coins-badge">
+          <span class="badge-icon">🪙</span>
+          <span class="badge-label"><strong id="coins-display">60</strong></span>
+        </div>
+        <button id="sound-toggle-btn" class="icon-btn" title="Toggle Sound">🔊</button>
+        <button id="cookbook-btn" class="icon-btn" title="Chef's Riddle Codex">📖</button>
+      </div>
+    </header>
+
+    <!-- MAIN KITCHEN STAGE -->
+    <main class="kitchen-stage">
+      <div class="kitchen-window" aria-hidden="true">
+        <span>☀️</span>
+        <span>🪴</span>
+      </div>
+      <div class="kitchen-fixtures" aria-hidden="true">
+        <div class="wall-cabinet cabinet-left"><span>✿</span></div>
+        <div class="dish-rack"><span>🍽️</span><span>🍽️</span><span>🍽️</span></div>
+        <div class="wall-sink">
+          <span class="sink-faucet">⌒</span>
+          <span class="sink-basin"></span>
+        </div>
+        <div class="wall-cabinet cabinet-right"><span>✿</span></div>
+        <div class="hanging-herbs">🌿 🧄</div>
+      </div>
+
+      <!-- CARTOON KITCHEN SCENE: CHEF, SERVING COUNTER, AND ARRIVING CUSTOMER -->
+      <section class="counter-scene">
+        <!-- CHEF CHARACTER (LEFT SIDE) -->
+        <div class="chef-character-box" id="chef-character-box">
+          <div class="chef-sprite" id="chef-sprite">
+            <img class="chef-portrait" src="assets/characters/rahfa.png" alt="Chef Rahfa holding a dish">
+          </div>
+          <div class="chef-nametag">
+            <span class="chef-rank-title" id="chef-rank-title">Chef Rahfa • Bistro Apprentice</span>
+          </div>
+        </div>
+
+        <!-- CUSTOMER ARRIVAL & ORDER SECTION (RIGHT SIDE) -->
+        <div class="customer-station" id="customer-station">
+          <div class="customer-queue" id="customer-queue" aria-label="Customers waiting"></div>
+          <div class="customer-wrapper" id="customer-wrapper">
+            <div class="customer-avatar" id="customer-avatar">
+              <div class="customer-face">
+                <img id="customer-portrait" src="assets/characters/naja.png" alt="Naja">
+                <span class="customer-reaction" id="customer-face" aria-hidden="true">🙂</span>
+              </div>
+              <div class="customer-mood-bubble" id="customer-mood-bubble">💭</div>
+              <div class="customer-shadow"></div>
+            </div>
+            
+            <div class="speech-bubble" id="speech-bubble">
+              <span class="order-label" id="order-label">🔔 CUSTOMER 1 OF 1</span>
+              <div class="bubble-header">
+                <span class="customer-name" id="customer-name">Detective Crumb</span>
+                <span class="customer-trait" id="customer-trait">"Needs spicy clues"</span>
+              </div>
+              <div class="bubble-body">
+                <p class="riddle-text" id="riddle-text">
+                  "I crave a round golden disc forged from wheat powder, smeared with bleeding vine fruit, blanketed in melted cow cream and topped with forest umbrellas!"
+                </p>
+                <div class="riddle-meta">
+                  <span class="dish-hint-badge" id="dish-hint-badge">Hint: 4 Ingredients</span>
+                  <span class="cooking-hint-badge" id="cooking-hint-badge">🔥 Method: Oven Bake</span>
+                </div>
+              </div>
+              
+              <!-- CLEAR REAL-TIME PATIENCE BAR -->
+              <div class="patience-wrapper">
+                <span class="patience-label">Patience:</span>
+                <div class="patience-bar-container">
+                  <div class="patience-bar-fill" id="patience-bar"></div>
+                </div>
+                <span class="patience-emoji" id="patience-emoji">⏳</span>
+                <span class="patience-seconds" id="patience-seconds">90s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="kitchen-counter">
+        <!-- COOKING & PREP WORKSPACE -->
+        <section class="workspace-section">
+          <div class="serving-counter-station" id="serving-counter-station">
+            <div class="platter-podium">
+              <div class="platter-dish-wrapper" id="platter-dish-wrapper">
+                <div class="cloche-cover" id="cloche-cover">🛎️</div>
+                <div class="plated-dish-display hidden" id="plated-dish-display">
+                  <div class="dish-smoke">💨</div>
+                  <div class="dish-plate">
+                    <span class="plated-dish-icon" id="plated-dish-icon">🍕</span>
+                  </div>
+                  <span class="plated-dish-tag" id="plated-dish-tag">Margherita Pizza</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PREP BOARD / SELECTED INGREDIENTS -->
+          <div class="prep-station">
+            <div class="station-header">
+              <h3>🥣 Preparation Bowl</h3>
+              <span class="prep-count" id="prep-count">(0/5 max)</span>
+              <button id="clear-prep-btn" class="action-btn small-btn danger-btn" title="Clear Bowl">🗑️ Empty</button>
+            </div>
+
+            <div class="prep-bowl" id="prep-bowl">
+              <div class="empty-bowl-msg" id="empty-bowl-msg">Click pantry ingredients below to craft your dish!</div>
+            </div>
+          </div>
+
+          <!-- APPLIANCE / COOKING METHOD SELECTION -->
+          <div class="cooking-station">
+            <div class="station-header">
+              <h3>🔥 Cooking Appliance</h3>
+            </div>
+            <div class="appliance-grid">
+              <button class="appliance-card active" data-method="bake">
+                <span class="appliance-icon">🍕</span>
+                <span class="appliance-name">Oven Bake</span>
+              </button>
+              <button class="appliance-card" data-method="boil">
+                <span class="appliance-icon">🍲</span>
+                <span class="appliance-name">Pot Boil</span>
+              </button>
+              <button class="appliance-card" data-method="fry">
+                <span class="appliance-icon">🍳</span>
+                <span class="appliance-name">Pan Fry</span>
+              </button>
+              <button class="appliance-card" data-method="cold">
+                <span class="appliance-icon">🥗</span>
+                <span class="appliance-name">Raw / Mix</span>
+              </button>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="action-button-row">
+              <button id="hint-btn" class="action-btn secondary-btn">💡 Hint (-15 🪙)</button>
+              <button id="cook-serve-btn" class="action-btn primary-btn pulse-anim">
+                ✨ Cook & Serve Dish!
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTRY / INGREDIENT SHELVES -->
+        <section class="pantry-section">
+          <div class="pantry-shelf-title">
+            <span>🥕 Kitchen Pantry & Fresh Ingredients</span>
+            <span class="shelf-instruction">Click an ingredient to add it to your bowl</span>
+          </div>
+          <div class="ingredient-grid" id="ingredient-grid">
+            <!-- Populated dynamically with all 16 ingredients -->
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- COOKING ANIMATION OVERLAY -->
+    <div id="cooking-overlay" class="modal-overlay hidden">
+      <div class="cooking-modal-card">
+        <div class="pot-animation-box" id="pot-animation-box">
+          <div class="cooking-steam">💨</div>
+          <div class="cooking-pot" id="cooking-pot-graphic">🥘</div>
+          <div class="cooking-sparks">✨</div>
+        </div>
+        <h3 id="cooking-modal-title">Simmering the riddle...</h3>
+        <p id="cooking-modal-desc">Deciphering culinary metaphors!</p>
+        <div class="cooking-progress-container">
+          <div class="cooking-progress-bar" id="cooking-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAILED RESULT MODAL (READY VS FAILED BREAKDOWN & DIRECT NEXT LEVEL) -->
+    <div id="result-modal" class="modal-overlay hidden">
+      <div class="result-modal-card" id="result-modal-card">
+        <div class="result-icon" id="result-icon">🎉</div>
+        <h2 id="result-title">Perfection!</h2>
+        
+        <!-- DISH DISPLAY ON RESULT -->
+        <div class="result-dish-presentation">
+          <span class="result-dish-big-icon" id="result-dish-big-icon">🍕</span>
+          <div class="result-dish-details">
+            <h3 id="result-dish-name">Classic Margherita Pizza</h3>
+            <p id="result-feedback" class="result-feedback">"Just what my riddle described! Exquisite!"</p>
+          </div>
+        </div>
+
+        <!-- INGREDIENT PERFORMANCE BREAKDOWN (READY VS FAILED) -->
+        <div class="ingredients-report-box">
+          <div class="report-col ready-col">
+            <h4><span class="report-badge success-badge">✅ WIN</span> (<span id="modal-ready-count">0</span>)</h4>
+            <div class="report-list" id="modal-ready-list"></div>
+          </div>
+          
+          <div class="report-col failed-col">
+            <h4><span class="report-badge fail-badge">❌ FAILED</span> (<span id="modal-failed-count">0</span>)</h4>
+            <div class="report-list" id="modal-failed-list"></div>
+          </div>
+        </div>
+        
+        <!-- SCORE & COINS BREAKDOWN -->
+        <div class="result-breakdown" id="result-breakdown">
+          <div class="breakdown-item">
+            <span>Points Earned:</span>
+            <strong id="points-earned">+250</strong>
+          </div>
+          <div class="breakdown-item">
+            <span>Coins:</span>
+            <strong id="coins-earned">+25 🪙</strong>
+          </div>
+          <div class="breakdown-item">
+            <span>Customer Rating:</span>
+            <strong id="customer-stars">⭐⭐⭐</strong>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS: PROCEED ON WIN, MUST RETRY ON FAILURE (NO SKIPPING) -->
+        <div class="result-actions-row">
+          <button id="retry-level-btn" class="action-btn primary-btn big-play-btn hidden">Try Again 🔄</button>
+          <button id="next-level-btn" class="action-btn primary-btn big-play-btn">Next Level 🚀</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAP VICTORY MODAL (AFTER COMPLETING 10 LEVELS OF A LAP) -->
+    <div id="lap-modal" class="modal-overlay hidden">
+      <div class="lap-modal-card">
+        <div class="lap-trophy-large">🌟 🏁 🏆</div>
+        <h2 id="lap-complete-title">LAP 1 COMPLETED!</h2>
+        <p id="lap-complete-sub" class="lap-complete-sub">Morning Bistro Rush Mastered!</p>
+        
+        <div class="lap-complete-report">
+            <div class="report-card">
+              <span class="report-label">Lap orders</span>
+              <strong class="report-val" id="lap-orders-completed">10 levels • 10 customer orders</strong>
+          </div>
+          <div class="report-card">
+            <span class="report-label">Total Won Ingredients</span>
+            <strong class="report-val color-success" id="lap-final-ready">35</strong>
+          </div>
+          <div class="report-card">
+            <span class="report-label">Total Failed Ingredients</span>
+            <strong class="report-val color-danger" id="lap-final-failed">2</strong>
+          </div>
+          <div class="report-card">
+            <span class="report-label">Kitchen Accuracy</span>
+            <strong class="report-val" id="lap-final-accuracy">94%</strong>
+          </div>
+        </div>
+
+        <button id="advance-lap-btn" class="action-btn primary-btn big-play-btn">
+          Start Next Lap 🏁
+        </button>
+      </div>
+    </div>
+
+    <!-- CHEF'S RIDDLE CODEX (RECIPE BOOK MODAL) -->
+    <div id="codex-modal" class="modal-overlay hidden">
+      <div class="codex-card">
+        <div class="codex-header">
+          <h2>📖 Chef's Riddle Encyclopedia</h2>
+          <button id="close-codex-btn" class="close-x">&times;</button>
+        </div>
+        <p class="codex-subtitle">Decipher the secret poetic names of ingredients & master dishes!</p>
+        
+        <div class="codex-tabs">
+          <button class="tab-btn active" data-tab="ingredients">Ingredient Clues</button>
+          <button class="tab-btn" data-tab="recipes">Master Dishes</button>
+        </div>
+
+        <div class="codex-content" id="codex-content"></div>
+      </div>
+    </div>
+
+    <!-- START / WELCOME MODAL -->
+    <div id="start-modal" class="modal-overlay">
+      <div class="start-modal-card">
+        <div class="start-header-art">🍲 ✨ 🍓</div>
+        <h1>Chef's Recipe Riddle</h1>
+        <p class="start-tagline">The kitchen is buzzing! Follow the clues, cook up a tasty dish, and make every customer smile.</p>
+        
+        <div class="instructions-box">
+          <h3>🍳 Your kitchen adventure</h3>
+          <div class="welcome-steps">
+            <span>🥕 Pick ingredients from the pantry</span>
+            <span>🔥 Choose how to cook your dish</span>
+            <span>⭐ Serve it up before time runs out</span>
+          </div>
+        </div>
+
+        <button id="play-game-btn" class="action-btn primary-btn big-play-btn">
+          👩‍🍳 Let's Get Cooking!
+        </button>
+      </div>
+    </div>
+
+    <!-- FLOATING TOAST NOTIFICATIONS -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
